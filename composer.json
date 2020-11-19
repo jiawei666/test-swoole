@@ -1,0 +1,16 @@
+{
+    "name": "yuanjw/test-swoole",
+    "description": "swoole测试项目",
+    "type": "project",
+    "authors": [
+        {
+            "name": "yuanjiawei",
+            "email": "jiawei.yuan@zcplan.cn"
+        }
+    ],
+    "require": {
+    },
+    "require-dev": {
+        "swoole/ide-helper": "@dev"
+    }
+}
