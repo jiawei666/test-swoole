@@ -8,9 +8,10 @@ go(function () {
     $client->send("hello world\n");
     while (true) {
         $data = $client->recv();
+//        var_dump("接收到数据：{$data}");
         if (strlen($data) > 0) {
             echo $data;
-            $client->send(time() . PHP_EOL);
+//            $client->send(time() . PHP_EOL);
         } else {
             if ($data === '') {
                 // 全等于空 直接关闭连接

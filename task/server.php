@@ -38,6 +38,8 @@ class Server
 
         echo "manager_pid: {$serv->manager_pid}" . PHP_EOL;
 
+//        var_dump($serv);
+
         echo '########' . PHP_EOL . PHP_EOL;
     }
 
@@ -76,7 +78,9 @@ class Server
             echo "Task {$task_id} 已完成了 {$i}/5 的任务" . PHP_EOL;
         }
         $data_arr = json_decode($data, true);
-        $serv->send($data_arr['fd'], 'Email:' . $data_arr['email'] . ',发送成功');
+        $res = $serv->send($data_arr['fd'], 'Email:' . $data_arr['email'] . ',发送成功' . PHP_EOL);
+        var_dump($res);
+//        echo '发送数据：' . $res . PHP_EOL;
         $serv->finish($data);
         echo '########' . PHP_EOL . PHP_EOL;
     }
