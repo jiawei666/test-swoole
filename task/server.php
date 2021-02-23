@@ -25,6 +25,7 @@ class Server
         $this->serv->on('Close', [$this, 'onClose']);
         $this->serv->on('Task', [$this, 'onTask']);
         $this->serv->on('Finish', [$this, 'onFinish']);
+        $this->serv->on('Message', [$this, 'onMessage']);
         $this->serv->start();
     }
 
@@ -74,13 +75,12 @@ class Server
 
         //业务代码
         for ($i = 1; $i <= 5; $i++) {
-            sleep(2);
+            sleep(1);
             echo "Task {$task_id} 已完成了 {$i}/5 的任务" . PHP_EOL;
         }
         $data_arr = json_decode($data, true);
         $res = $serv->send($data_arr['fd'], 'Email:' . $data_arr['email'] . ',发送成功' . PHP_EOL);
-        var_dump($res);
-//        echo '发送数据：' . $res . PHP_EOL;
+        echo '发送数据：' . $res . PHP_EOL;
         $serv->finish($data);
         echo '########' . PHP_EOL . PHP_EOL;
     }
@@ -95,6 +95,11 @@ class Server
     public function onClose($serv, $fd)
     {
         echo 'Client Close.' . PHP_EOL;
+    }
+
+    public function onMessage($serv, $fd)
+    {
+        echo 'on Message' . PHP_EOL;
     }
 }
 

@@ -6,30 +6,38 @@ class Client
 
     public function __construct()
     {
-        $this->client = new Swoole\Coroutine\Client(SWOOLE_SOCK_TCP);
-        $this->client->recv();
-        $this->client->on('Close', [$this, 'onClose']);
-        $this->client->on('Error', [$this, 'onError']);
-    }
+        Co\run(function(){
+            $client = new Swoole\Coroutine\Client(SWOOLE_SOCK_TCP);
+            if (!$fp = $client->connect('127.0.0.1', 9501, 1)) {
+                echo "Error: {$fp->errMsg}[{$fp->errCode}]" . PHP_EOL;
 
-    public function connect()
-    {
-        if (!$fp = $this->client->connect('127.0.0.1', 9501, 1)) {
-            echo "Error: {$fp->errMsg}[{$fp->errCode}]" . PHP_EOL;
+                return;
+            } else {
+                fwrite(STDOUT, '输入Email:');
+                // 异步，swoole_event_add不会阻塞代码(相当于这是个yield语句的迭代器。每当接收到stdin的数据流，就会执行yield，启用系统调用（匿名函数）)
+                swoole_event_add(
+                    STDIN,
+                    function () use ($client) {
+                        $msg = trim(fgets(STDIN));
+                        echo "数据已发送，你可以继续输入数据："  . PHP_EOL;
+                        $client->send($msg);
+//                        fwrite(STDOUT, '输入Email:');
+                    }
+                );
 
-            return;
-        } else {
-            fwrite(STDOUT, '输入Email:');
-            swoole_event_add(
-                STDIN,
-                function () {
-                    fwrite(STDOUT, '输入Email:');
-                    $msg = trim(fgets(STDIN));
-                    $this->send($msg);
+                while (true) {
+                    $data = $client->recv();
+                    if (strlen($data) > 0) {
+                        fwrite(STDOUT, "接受到数据 - {$data}" . PHP_EOL);
+                    }
+                    \Co::sleep(1);
                 }
-            );
-        }
+            }
+        });
+
+
     }
+
 
 
     public function onReceive($cli, $data)
@@ -37,20 +45,6 @@ class Client
         echo PHP_EOL . 'Received: ' . $data . PHP_EOL;
     }
 
-    public function send($data)
-    {
-        $this->client->send($data);
-    }
-
-    public function onClos($cli)
-    {
-        echo 'Client close connection' . PHP_EOL;
-    }
-
-    public function onError()
-    {
-    }
 }
 
 $client = new Client();
-$client->connect();

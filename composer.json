@@ -9,6 +9,7 @@
         }
     ],
     "require": {
+        "": ">=7.0"
     },
     "require-dev": {
         "swoole/ide-helper": "@dev"
